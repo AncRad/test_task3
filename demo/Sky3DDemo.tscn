@@ -1,6 +1,7 @@
-[gd_scene load_steps=17 format=3 uid="uid://c5friqigqdh4k"]
+[gd_scene load_steps=32 format=3 uid="uid://c5friqigqdh4k"]
 
 [ext_resource type="PackedScene" uid="uid://dipn6t27p0nap" path="res://demo/assets/scenes/PrimitivesCity.tscn" id="2"]
+[ext_resource type="Script" uid="uid://du35n0ht6yqko" path="res://weather/sky_3d_controller.gd" id="2_0j4pb"]
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="2_cejat"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="3"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="4"]
@@ -11,6 +12,10 @@
 [ext_resource type="Texture2D" uid="uid://2r8ylu6rg5dp" path="res://addons/sky_3d/assets/thirdparty/textures/moon/MoonMap.png" id="6_v8wrf"]
 [ext_resource type="Texture2D" uid="uid://djpfuyxkryegn" path="res://addons/sky_3d/assets/textures/noise.jpg" id="7_d0ed4"]
 [ext_resource type="Texture2D" uid="uid://bm7dot7t7u1q4" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/StarField.jpg" id="8_humls"]
+[ext_resource type="Shader" uid="uid://bqaetpq827vg6" path="res://addons/sky_3d/shaders/AtmFog.gdshader" id="12_d0ed4"]
+[ext_resource type="AnimationLibrary" uid="uid://bw5ijy8miap8a" path="res://weather/anim_lib.tres" id="13_1g8sw"]
+[ext_resource type="Texture2D" uid="uid://hl8w41k0t8ia" path="res://demo/assets/textures/ProtGrid0.jpg" id="15_humls"]
+[ext_resource type="Texture2D" uid="uid://cmrmxuopmilj6" path="res://heightmap.png" id="16_vq0ue"]
 
 [sub_resource type="GDScript" id="GDScript_v8wrf"]
 script/source = "extends Node3D
@@ -112,6 +117,29 @@ func toggle_fullscreen() -> void:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 "
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_1g8sw"]
+animation = &"cumulus_0"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_d0ed4"]
+animation = &"cumulus_1"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_humls"]
+animation = &"cumulus_2"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_vq0ue"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_1g8sw")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_d0ed4")
+blend_point_1/pos = 0.5
+blend_point_2/node = SubResource("AnimationNodeAnimation_humls")
+blend_point_2/pos = 1.0
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_d0ed4"]
+nodes/output/position = Vector2(740, 140)
+nodes/ClearToClouds/node = SubResource("AnimationNodeBlendSpace1D_vq0ue")
+nodes/ClearToClouds/position = Vector2(220, 120)
+node_connections = [&"output", 0, &"ClearToClouds"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v8wrf"]
 shader = ExtResource("4_v8wrf")
 shader_parameter/sky_visible = true
@@ -122,12 +150,12 @@ shader_parameter/atm_darkness = 0.5
 shader_parameter/atm_sun_intensity = 18.0
 shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
 shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
-shader_parameter/atm_night_tint = Color(0.057391796, 0.068069525, 0.085420445, 0.34034762)
+shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
 shader_parameter/atm_level_params = Vector3(1, 0, 0)
 shader_parameter/atm_thickness = 0.7
 shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
 shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
-shader_parameter/sun_light_color = Color(0.98, 0.523, 0.294, 1)
+shader_parameter/sun_light_color = Color(1, 1, 1, 1)
 shader_parameter/sun_disk_color = Color(0.996094, 0.541334, 0.140076, 1)
 shader_parameter/sun_disk_intensity = 30.0
 shader_parameter/sun_disk_size = 0.02
@@ -141,7 +169,7 @@ shader_parameter/moon_texture_flip_u = false
 shader_parameter/moon_texture_flip_v = false
 shader_parameter/moon_size = 0.07
 shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
-shader_parameter/atm_moon_mie_intensity = 0.23658217810094354
+shader_parameter/atm_moon_mie_intensity = 0.0
 shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
 shader_parameter/starmap_color = Color(0.709804, 0.709804, 0.709804, 0.854902)
 shader_parameter/starmap_texture = ExtResource("5_0j4pb")
@@ -149,7 +177,7 @@ shader_parameter/starmap_flip_u = false
 shader_parameter/starmap_flip_v = false
 shader_parameter/starmap_alignment = Vector3(2.68288, -0.25891, 0.40101)
 shader_parameter/star_rotation_offset = 9.38899
-shader_parameter/star_rotation = -9.711138284154199
+shader_parameter/star_rotation = -11.116156759651544
 shader_parameter/star_tilt = -1.2915436464758039
 shader_parameter/star_field_color = Color(1, 1, 1, 1)
 shader_parameter/star_field_texture = ExtResource("8_humls")
@@ -157,7 +185,7 @@ shader_parameter/star_scintillation = 0.75
 shader_parameter/star_scintillation_speed = 0.01
 shader_parameter/noise_tex = ExtResource("7_d0ed4")
 shader_parameter/clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
-shader_parameter/cirrus_visible = true
+shader_parameter/cirrus_visible = false
 shader_parameter/cirrus_intensity = 2.0
 shader_parameter/cirrus_coverage = 0.5
 shader_parameter/cirrus_thickness = 1.7
@@ -165,8 +193,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.7308965, 5.0460643e-05)
-shader_parameter/cirrus_position2 = Vector2(0.7308965, 5.0460643e-05)
+shader_parameter/cirrus_position1 = Vector2(0.018950503, 0.018950503)
+shader_parameter/cirrus_position2 = Vector2(0.018950503, 0.018950503)
 shader_parameter/cirrus_texture = ExtResource("6_1g8sw")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -176,7 +204,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(79.19066, 0.00029048725)
+shader_parameter/cumulus_position = Vector2(0.2591565, 0.2591565)
 shader_parameter/cumulus_texture = ExtResource("5_rt0jr")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -186,7 +214,7 @@ shader_parameter/azimuthal_grid_rotation_offset = 0.03
 shader_parameter/show_equatorial_grid = false
 shader_parameter/equatorial_grid_color = Color(0, 0.75, 1, 1)
 shader_parameter/equatorial_grid_rotation_offset = 0.03
-shader_parameter/moon_matrix = Basis(-7.4505815e-09, -0.27634087, 0.9610598, -0.9609947, -0.2657975, -0.0764268, 0.2765671, -0.9235733, -0.26556212)
+shader_parameter/moon_matrix = Basis(7.450581e-09, 0.48308223, -0.87557495, -0.2035854, 0.857238, 0.47296518, 0.9790572, 0.17825429, 0.098348506)
 
 [sub_resource type="Sky" id="Sky_0j4pb"]
 sky_material = SubResource("ShaderMaterial_v8wrf")
@@ -195,24 +223,159 @@ sky_material = SubResource("ShaderMaterial_v8wrf")
 background_mode = 2
 sky = SubResource("Sky_0j4pb")
 ambient_light_source = 3
-ambient_light_color = Color(0.38921005, 0.23168632, 0.16043657, 1)
-ambient_light_sky_contribution = 0.7
+ambient_light_color = Color(1, 1, 1, 1)
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_white = 6.0
+fog_density = 0.005
+fog_aerial_perspective = 0.895
+fog_depth_end = 200.0
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_d0ed4"]
+dof_blur_far_distance = 150.0
+dof_blur_far_transition = 1083.98
+dof_blur_amount = 0.02
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_humls"]
+render_priority = 100
+shader = ExtResource("12_d0ed4")
+shader_parameter/color_correction = Vector2(0, 1)
+shader_parameter/fog_density = 0.0007
+shader_parameter/fog_rayleigh_depth = 0.115
+shader_parameter/fog_mie_depth = 0.0001
+shader_parameter/fog_falloff = 100.0
+shader_parameter/fog_start = 0.0
+shader_parameter/fog_end = 100.0
+shader_parameter/sun_direction = Vector3(0.15679221, 0.76917607, 0.6195033)
+shader_parameter/moon_direction = Vector3(0.9790572, 0.17825429, 0.098348506)
+shader_parameter/atm_darkness = 0.5
+shader_parameter/atm_sun_intensity = 18.0
+shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
+shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
+shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
+shader_parameter/atm_level_params = Vector3(1, 0, -1)
+shader_parameter/atm_thickness = 0.7
+shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
+shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
+shader_parameter/atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/atm_sun_mie_tint = Color(1, 1, 1, 1)
+shader_parameter/atm_sun_mie_intensity = 1.0
+shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
+shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
+shader_parameter/atm_moon_mie_intensity = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_vq0ue"]
+size = Vector2(2, 2)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_vq0ue"]
+subdivide_width = 1000
+subdivide_depth = 1000
+
+[sub_resource type="Shader" id="Shader_humls"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.5.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
+uniform ivec2 albedo_texture_size;
+uniform float point_size : hint_range(0.1, 128.0, 0.1);
+
+uniform float roughness : hint_range(0.0, 1.0);
+uniform sampler2D texture_metallic : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r, filter_linear_mipmap, repeat_enable;
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+varying vec3 uv1_triplanar_pos;
+
+uniform float uv1_blend_sharpness : hint_range(0.0, 150.0, 0.001);
+varying vec3 uv1_power_normal;
+
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+uniform sampler2D texture_height : filter_linear_mipmap, repeat_enable;
+
+void vertex() {
+	VERTEX.y += texture(texture_height, UV).r * 0.04;
+
+	vec3 normal = MODEL_NORMAL_MATRIX * NORMAL;
+
+	TANGENT = vec3(0.0, 0.0, -1.0) * abs(normal.x);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.y);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.z);
+	TANGENT = inverse(MODEL_NORMAL_MATRIX) * normalize(TANGENT);
+
+	BINORMAL = vec3(0.0, 1.0, 0.0) * abs(normal.x);
+	BINORMAL += vec3(0.0, 0.0, -1.0) * abs(normal.y);
+	BINORMAL += vec3(0.0, 1.0, 0.0) * abs(normal.z);
+	BINORMAL = inverse(MODEL_NORMAL_MATRIX) * normalize(BINORMAL);
+
+	// UV1 Triplanar: Enabled (with World Triplanar)
+	uv1_power_normal = pow(abs(normal), vec3(uv1_blend_sharpness));
+	uv1_triplanar_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz * uv1_scale + uv1_offset;
+	uv1_power_normal /= dot(uv1_power_normal, vec3(1.0));
+	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+}
+
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {
+	vec4 samp = vec4(0.0);
+	samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;
+	samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;
+	samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;
+	return samp;
+}
+
+void fragment() {
+	vec4 albedo_tex = triplanar_texture(texture_albedo, uv1_power_normal, uv1_triplanar_pos);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+
+	float metallic_tex = dot(triplanar_texture(texture_metallic, uv1_power_normal, uv1_triplanar_pos), metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	SPECULAR = specular;
+
+	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	float roughness_tex = dot(triplanar_texture(texture_roughness, uv1_power_normal, uv1_triplanar_pos), roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vq0ue"]
+render_priority = 0
+shader = SubResource("Shader_humls")
+shader_parameter/albedo = Color(0.45926803, 0.45926803, 0.45926803, 1)
+shader_parameter/texture_albedo = ExtResource("15_humls")
+shader_parameter/albedo_texture_size = Vector2i(512, 512)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_height = ExtResource("16_vq0ue")
 
 [node name="Main" type="Node3D"]
 
 [node name="PrimitivesCity" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.294655, 0, 0)
+
+[node name="Floor" parent="PrimitivesCity" index="0"]
+visible = false
 
 [node name="CameraManager" type="Node3D" parent="."]
 transform = Transform3D(0.0801989, 0, -0.996779, 0, 1, 0, 0.996779, 0, 0.0801989, -7.677, 4, 3.686)
 script = SubResource("GDScript_v8wrf")
 
 [node name="Camera3D" type="Camera3D" parent="CameraManager"]
-transform = Transform3D(1, 0, 0, 0, 0.987688, 0.156434, 0, -0.156434, 0.987688, 0, 0, 0)
 fov = 70.0
 far = 8192.0
 
@@ -221,24 +384,44 @@ update_mode = 1
 size = Vector3(2000, 2000, 2000)
 origin_offset = Vector3(0, 5, 0)
 
+[node name="Sky3DController" type="Node" parent="." node_paths=PackedStringArray("sky", "anim_tree")]
+script = ExtResource("2_0j4pb")
+sky = NodePath("../Sky3D")
+anim_tree = NodePath("AnimationTree")
+clear_to_clouds = 0.398
+wind_speed = 3.0
+wind_direction = 2.35619451204804
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sky3DController"]
+root_node = NodePath("../../Sky3D")
+libraries = {
+&"": ExtResource("13_1g8sw")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="Sky3DController"]
+root_node = NodePath("../../Sky3D")
+tree_root = SubResource("AnimationNodeBlendTree_d0ed4")
+anim_player = NodePath("../AnimationPlayer")
+parameters/ClearToClouds/blend_position = 0.398
+
 [node name="Sky3D" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1g8sw")
 camera_attributes = SubResource("CameraAttributesPractical_d0ed4")
 script = ExtResource("2_cejat")
-current_time = 6.15
-wind_speed = 7.0
-wind_direction = 1.5708
+editor_time_enabled = false
+current_time = 11.24
+wind_speed = 3.0
+wind_direction = 2.35619451204804
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="Sky3D"]
-transform = Transform3D(0.3947903, 0.037070245, 0.9180231, 0, 0.9991857, -0.040347632, -0.91877127, 0.015928853, 0.3944688, 0.9180231, -0.040347632, 0.3944688)
-light_color = Color(0.98, 0.523, 0.294, 1)
-light_energy = 0.0
+transform = Transform3D(0.9694328, -0.18872277, 0.15679221, 0, 0.6390369, 0.76917607, -0.24535705, -0.7456645, 0.6195033, 0.15679221, 0.76917607, 0.6195033)
+shadow_enabled = true
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 600.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="Sky3D"]
-transform = Transform3D(0, -0.9609946, 0.27656707, -0.27634087, -0.26579747, -0.9235732, 0.9610597, -0.07642679, -0.2655621, 0.27656707, -0.9235732, -0.2655621)
+transform = Transform3D(0, -0.2035854, 0.9790572, 0.48308226, 0.85723794, 0.17825429, -0.87557495, 0.47296515, 0.098348506, 0.9790572, 0.17825429, 0.098348506)
 light_color = Color(0.572549, 0.776471, 0.956863, 1)
 light_energy = 0.0
 directional_shadow_blend_splits = true
@@ -246,15 +429,39 @@ directional_shadow_max_distance = 256.0
 
 [node name="SkyDome" type="Node" parent="Sky3D"]
 script = ExtResource("4")
-sun_azimuth = -1.9766359
-sun_altitude = -1.6111549
-moon_azimuth = -0.80569494
-moon_altitude = -2.7480938
-fog_density = 0.01
-wind_speed = 7.0
-wind_direction = 1.5708
+sun_azimuth = -2.8937047
+sun_altitude = -0.6932455
+moon_azimuth = -1.6709127
+moon_altitude = -1.3915843
+wind_speed = 3.0
+wind_direction = 2.35619451204804
+cirrus_visible = false
 
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
 script = ExtResource("3")
+editor_time_enabled = false
 dome_path = NodePath("../SkyDome")
-current_time = 6.15
+current_time = 11.24
+day = 5
+
+[node name="_FogMeshI" type="MeshInstance3D" parent="."]
+visible = false
+layers = 524288
+material_override = SubResource("ShaderMaterial_humls")
+cast_shadow = 0
+custom_aabb = AABB(-1e+31, -1e+31, -1e+31, 2e+31, 2e+31, 2e+31)
+mesh = SubResource("QuadMesh_vq0ue")
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(600, 0, 0, 0, 600, 0, 0, 0, 600, 45.074036, -6.787725, -1.415451)
+mesh = SubResource("PlaneMesh_vq0ue")
+surface_material_override/0 = SubResource("ShaderMaterial_vq0ue")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(0.9335892, 0.0022903099, 0.3583378, 0, 0.9999797, -0.0063913516, -0.3583451, 0.005966898, 0.9335701, 46.97667, 2.7791672, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 371.19998)
+fov = 6.8
+
+[editable path="PrimitivesCity"]
