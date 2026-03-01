@@ -1,0 +1,24 @@
+[gd_resource type="ParticleProcessMaterial" load_steps=3 format=3 uid="uid://bwb4vk17qspl8"]
+
+[sub_resource type="Curve" id="Curve_ju7cu"]
+_data = [Vector2(0, 0.19304216), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_5fxrc"]
+width = 64
+curve = SubResource("Curve_ju7cu")
+
+[resource]
+emission_shape_offset = Vector3(0, 2, -10)
+emission_shape_scale = Vector3(10, 1, 15)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+direction = Vector3(0, -0.62469506, -0.7808688)
+spread = 2.0
+initial_velocity_min = 10.0
+initial_velocity_max = 18.00781
+gravity = Vector3(0, 0, 0)
+turbulence_enabled = true
+turbulence_noise_strength = 10.0
+turbulence_noise_scale = 3.902
+turbulence_influence_over_life = SubResource("CurveTexture_5fxrc")

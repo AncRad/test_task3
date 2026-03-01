@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cmxr5xo8hit7r"]
+
+[ext_resource type="Shader" uid="uid://dfdee8l61veh0" path="res://weather/precipitation_particle.gdshader" id="1_gydq0"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_gydq0")
+shader_parameter/distance_fade_min = 0.0
+shader_parameter/distance_fade_max = 1.0
+shader_parameter/brightness = 0.90000004275
+shader_parameter/contrast = 0.800000038
+shader_parameter/saturation = 1.0
