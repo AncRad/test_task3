@@ -131,7 +131,7 @@ void fragment() {
 	calc_coords(SCREEN_UV, depthRaw, camera_matrix, INV_PROJECTION_MATRIX, view, worldPos);
 	worldPos = normalize(worldPos);
 
-	float linear_depth = -view.z;
+	float linear_depth = length(view);
 	float fog_factor = calc_fog_exp(linear_depth, fog_density);
 	fog_factor *= calc_fog_falloff(worldPos.y, 0.0, fog_falloff);
 	fog_factor *= calc_fog_distance(linear_depth);
