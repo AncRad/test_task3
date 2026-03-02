@@ -13,23 +13,23 @@ enum Weather {Custom, Clear, Rain1, Rain2, Rain3, Snow1, Snow2, Snow3}
 			Weather.Clear:
 				clear_to_clouds = 0
 				precipitation_amount = 0
-				fog_strength = 0.2
+				fog_strength = 0.05
 				fog_dof_amount = 0
 			Weather.Rain1, Weather.Snow1:
 				clear_to_clouds = 0.5
 				precipitation_amount = 0.3
-				fog_strength = 0.5
+				fog_strength = 0.15
 				fog_dof_amount = 0.3
 			Weather.Rain2, Weather.Snow2:
 				clear_to_clouds = 0.7
 				precipitation_amount = 0.7
-				fog_strength = 0.7
+				fog_strength = 0.6
 				fog_dof_amount = 0.3
 			Weather.Rain3, Weather.Snow3:
 				clear_to_clouds = 0.8
 				precipitation_amount = 1
 				fog_strength = 1
-				fog_dof_amount = 0.5
+				fog_dof_amount = 0.3
 		
 		## снег или дождь
 		if weather in [Weather.Rain1, Weather.Rain2, Weather.Rain3]:
@@ -54,7 +54,7 @@ var precipitation_amount : float:
 		queue_update()
 
 ## количество тумана
-@export_range(0, 1, 0.05)
+@export_range(0, 1, 0.01)
 var fog_strength : float:
 	set(value):
 		fog_strength = value
